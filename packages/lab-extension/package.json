@@ -44,11 +44,11 @@
   },
   "dependencies": {
     "@jupyter-notebook/application": "^7.0.0-alpha.10",
-    "@jupyterlab/application": "^4.0.0-alpha.17",
-    "@jupyterlab/apputils": "^4.0.0-alpha.17",
+    "@jupyterlab/application": "^4.0.0",
+    "@jupyterlab/apputils": "^4.0.0",
     "@jupyterlab/coreutils": "^6.0.0-alpha.17",
     "@jupyterlab/docregistry": "^4.0.0-alpha.17",
-    "@jupyterlab/notebook": "^4.0.0-alpha.17",
+    "@jupyterlab/notebook": "^4.0.0",
     "@jupyterlab/translation": "^4.0.0-alpha.17",
     "@lumino/commands": "^2.0.0-alpha.7",
     "@lumino/disposable": "^2.0.0-alpha.7"
