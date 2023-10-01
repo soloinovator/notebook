@@ -41,7 +41,7 @@
   "dependencies": {
     "@jupyterlab/application": "^4.0.0-alpha.17",
     "@jupyterlab/coreutils": "^6.0.0-alpha.17",
-    "@jupyterlab/docmanager": "^4.0.0-alpha.17",
+    "@jupyterlab/docmanager": "^4.0.0",
     "@jupyterlab/docregistry": "^4.0.0-alpha.17",
     "@jupyterlab/services": "^7.0.0-alpha.17",
     "@lumino/algorithm": "^2.0.0-alpha.7",
