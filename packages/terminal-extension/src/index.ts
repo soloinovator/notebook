@@ -4,12 +4,17 @@
 import {
   IRouter,
   JupyterFrontEnd,
-  JupyterFrontEndPlugin
+  JupyterFrontEndPlugin,
 } from '@jupyterlab/application';
 
-import { PageConfig } from '@jupyterlab/coreutils';
+import { PageConfig, URLExt } from '@jupyterlab/coreutils';
 
 import { ITerminalTracker } from '@jupyterlab/terminal';
+
+import {
+  INotebookPathOpener,
+  defaultNotebookPathOpener,
+} from '@jupyter-notebook/application';
 
 import { find } from '@lumino/algorithm';
 
@@ -18,6 +23,7 @@ import { find } from '@lumino/algorithm';
  */
 const opener: JupyterFrontEndPlugin<void> = {
   id: '@jupyter-notebook/terminal-extension:opener',
+  description: 'A plugin to open terminals in a new tab.',
   requires: [IRouter, ITerminalTracker],
   autoStart: true,
   activate: (
@@ -45,11 +51,11 @@ const opener: JupyterFrontEndPlugin<void> = {
           terminal.content.setOption('closeOnExit', false);
         });
         commands.execute('terminal:open', { name });
-      }
+      },
     });
 
     router.register({ command, pattern: terminalPattern });
-  }
+  },
 };
 
 /**
@@ -57,23 +63,38 @@ const opener: JupyterFrontEndPlugin<void> = {
  */
 const redirect: JupyterFrontEndPlugin<void> = {
   id: '@jupyter-notebook/terminal-extension:redirect',
+  description: 'Open terminals in a new tab.',
   requires: [ITerminalTracker],
+  optional: [INotebookPathOpener],
   autoStart: true,
-  activate: (app: JupyterFrontEnd, tracker: ITerminalTracker) => {
+  activate: (
+    app: JupyterFrontEnd,
+    tracker: ITerminalTracker,
+    notebookPathOpener: INotebookPathOpener | null
+  ) => {
     const baseUrl = PageConfig.getBaseUrl();
+    const opener = notebookPathOpener ?? defaultNotebookPathOpener;
+
     tracker.widgetAdded.connect((send, terminal) => {
-      const widget = find(app.shell.widgets('main'), w => w.id === terminal.id);
+      const widget = find(
+        app.shell.widgets('main'),
+        (w) => w.id === terminal.id
+      );
       if (widget) {
         // bail if the terminal is already added to the main area
         return;
       }
       const name = terminal.content.session.name;
-      window.open(`${baseUrl}terminals/${name}`, '_blank');
+      opener.open({
+        prefix: URLExt.join(baseUrl, 'terminals'),
+        path: name,
+        target: '_blank',
+      });
 
       // dispose the widget since it is not used on this page
       terminal.dispose();
     });
-  }
+  },
 };
 
 /**

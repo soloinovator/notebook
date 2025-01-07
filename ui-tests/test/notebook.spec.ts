@@ -3,11 +3,11 @@
 
 import path from 'path';
 
-import { expect } from '@playwright/test';
+import { expect } from '@jupyterlab/galata';
 
 import { test } from './fixtures';
 
-import { runAndAdvance, waitForKernelReady } from './utils';
+import { waitForNotebook, runAndAdvance, waitForKernelReady } from './utils';
 
 const NOTEBOOK = 'example.ipynb';
 
@@ -31,7 +31,7 @@ test.describe('Notebook', () => {
 
   test('Renaming the notebook should be possible', async ({
     page,
-    tmpPath
+    tmpPath,
   }) => {
     const notebook = `${tmpPath}/${NOTEBOOK}`;
     await page.goto(`notebooks/${notebook}`);
@@ -49,7 +49,7 @@ test.describe('Notebook', () => {
     await Promise.all([
       await page.click('text="Rename"'),
       // wait until the URL is updated
-      await page.waitForNavigation()
+      await page.waitForNavigation(),
     ]);
 
     // Check the URL contains the new name
@@ -61,7 +61,7 @@ test.describe('Notebook', () => {
   // and usable in Jupyter Notebook without active tabs
   test('Outputs should be scrolled automatically', async ({
     page,
-    tmpPath
+    tmpPath,
   }) => {
     const notebook = 'autoscroll.ipynb';
     await page.contents.uploadFile(
@@ -70,7 +70,7 @@ test.describe('Notebook', () => {
     );
     await page.goto(`notebooks/${tmpPath}/${notebook}`);
 
-    // wait for the checkpoint indicator to be displayed before exexuting the cells
+    // wait for the checkpoint indicator to be displayed before executing the cells
     await page.waitForSelector('.jp-NotebookCheckpoint');
     await page.click('.jp-Notebook');
 
@@ -87,7 +87,7 @@ test.describe('Notebook', () => {
     expect(page.locator('.jp-mod-outputsScrolled').nth(1)).toHaveCount(0);
 
     const checkCell = async (n: number): Promise<boolean> => {
-      const scrolled = await page.$eval(`.jp-Notebook-cell >> nth=${n}`, el =>
+      const scrolled = await page.$eval(`.jp-Notebook-cell >> nth=${n}`, (el) =>
         el.classList.contains('jp-mod-outputsScrolled')
       );
       return scrolled;
@@ -154,5 +154,56 @@ test.describe('Notebook', () => {
 
     const imageName = 'notebooktools-right-panel.png';
     expect(await panel.screenshot()).toMatchSnapshot(imageName);
+  });
+
+  test('Clicking on "Close and Shut Down Notebook" should close the browser tab', async ({
+    page,
+    tmpPath,
+  }) => {
+    const notebook = 'simple.ipynb';
+    await page.contents.uploadFile(
+      path.resolve(__dirname, `./notebooks/${notebook}`),
+      `${tmpPath}/${notebook}`
+    );
+    await page.goto(`notebooks/${tmpPath}/${notebook}`);
+
+    const menuPath = 'File>Close and Halt';
+    await page.menu.clickMenuItem(menuPath);
+
+    // Press Enter to confirm the dialog
+    await page.keyboard.press('Enter');
+
+    expect(page.isClosed());
+  });
+
+  test('Toggle the full width of the notebook', async ({
+    page,
+    browserName,
+    tmpPath,
+  }) => {
+    const notebook = 'simple.ipynb';
+    await page.contents.uploadFile(
+      path.resolve(__dirname, `./notebooks/${notebook}`),
+      `${tmpPath}/${notebook}`
+    );
+    await page.goto(`notebooks/${tmpPath}/${notebook}`);
+
+    const menuPath = 'View>Enable Full Width Notebook';
+    await page.menu.clickMenuItem(menuPath);
+
+    const notebookPanel = page.locator('.jp-NotebookPanel').first();
+    await expect(notebookPanel).toHaveClass(/jp-mod-fullwidth/);
+
+    // click to make the blue border around the cell disappear
+    await page.click('.jp-WindowedPanel-outer');
+
+    // wait for the notebook to be ready
+    await waitForNotebook(page, browserName);
+
+    expect(await page.screenshot()).toMatchSnapshot('notebook-full-width.png');
+
+    // undo the full width
+    await page.menu.clickMenuItem(menuPath);
+    await expect(notebookPanel).not.toHaveClass(/jp-mod-fullwidth/);
   });
 });

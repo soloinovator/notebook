@@ -5,7 +5,7 @@ import path from 'path';
 
 import { test } from './fixtures';
 
-import { expect } from '@playwright/test';
+import { expect } from '@jupyterlab/galata';
 
 const FILE = 'environment.yml';
 
@@ -20,7 +20,7 @@ const processRenameDialog = async (page, prevName: string, newName: string) => {
   await Promise.all([
     await page.click('text="Rename"'),
     // wait until the URL is updated
-    await page.waitForNavigation()
+    await page.waitForNavigation(),
   ]);
 };
 
@@ -34,7 +34,7 @@ test.describe('Editor', () => {
 
   test('Renaming the file by clicking on the title', async ({
     page,
-    tmpPath
+    tmpPath,
   }) => {
     const file = `${tmpPath}/${FILE}`;
     await page.goto(`edit/${file}`);

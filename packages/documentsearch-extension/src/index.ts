@@ -1,6 +1,6 @@
 import {
   JupyterFrontEnd,
-  JupyterFrontEndPlugin
+  JupyterFrontEndPlugin,
 } from '@jupyterlab/application';
 
 import { ISearchProviderRegistry } from '@jupyterlab/documentsearch';
@@ -18,6 +18,7 @@ const notebookShellWidgetListener: JupyterFrontEndPlugin<void> = {
   id: '@jupyter-notebook/documentsearch-extension:notebookShellWidgetListener',
   requires: [INotebookShell, ISearchProviderRegistry],
   autoStart: true,
+  description: 'A plugin to add document search functionalities',
   activate: (
     app: JupyterFrontEnd,
     notebookShell: INotebookShell,
@@ -51,7 +52,7 @@ const notebookShellWidgetListener: JupyterFrontEndPlugin<void> = {
         transformWidgetSearchability(notebookShell.currentWidget);
       }
     });
-  }
+  },
 };
 
 /**

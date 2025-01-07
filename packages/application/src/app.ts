@@ -2,8 +2,9 @@
 // Distributed under the terms of the Modified BSD License.
 
 import {
+  JupyterLab,
   JupyterFrontEnd,
-  JupyterFrontEndPlugin
+  JupyterFrontEndPlugin,
 } from '@jupyterlab/application';
 
 import { Base64ModelFactory } from '@jupyterlab/docregistry';
@@ -40,6 +41,17 @@ export class NotebookApp extends JupyterFrontEnd<INotebookShell> {
       }
     }
 
+    // Create an IInfo dictionary from the options to override the defaults.
+    const info = Object.keys(JupyterLab.defaultInfo).reduce((acc, val) => {
+      if (val in options) {
+        (acc as any)[val] = JSON.parse(JSON.stringify((options as any)[val]));
+      }
+      return acc;
+    }, {} as Partial<JupyterLab.IInfo>);
+
+    // Populate application info.
+    this._info = { ...JupyterLab.defaultInfo, ...info };
+
     this.restored = this.shell.restored;
 
     this.restored.then(() => this._formatter.invoke());
@@ -72,6 +84,13 @@ export class NotebookApp extends JupyterFrontEnd<INotebookShell> {
   readonly version = PageConfig.getOption('appVersion') ?? 'unknown';
 
   /**
+   * The NotebookApp application information dictionary.
+   */
+  get info(): JupyterLab.IInfo {
+    return this._info;
+  }
+
+  /**
    * The JupyterLab application paths dictionary.
    */
   get paths(): JupyterFrontEnd.IPaths {
@@ -88,7 +107,7 @@ export class NotebookApp extends JupyterFrontEnd<INotebookShell> {
         hubHost: PageConfig.getOption('hubHost') || undefined,
         hubPrefix: PageConfig.getOption('hubPrefix') || undefined,
         hubUser: PageConfig.getOption('hubUser') || undefined,
-        hubServerName: PageConfig.getOption('hubServerName') || undefined
+        hubServerName: PageConfig.getOption('hubServerName') || undefined,
       },
       directories: {
         appSettings: PageConfig.getOption('appSettingsDir'),
@@ -98,8 +117,8 @@ export class NotebookApp extends JupyterFrontEnd<INotebookShell> {
         themes: PageConfig.getOption('themesDir'),
         userSettings: PageConfig.getOption('userSettingsDir'),
         serverRoot: PageConfig.getOption('serverRoot'),
-        workspaces: PageConfig.getOption('workspacesDir')
-      }
+        workspaces: PageConfig.getOption('workspacesDir'),
+      },
     };
   }
 
@@ -129,7 +148,7 @@ export class NotebookApp extends JupyterFrontEnd<INotebookShell> {
     if (!Array.isArray(data)) {
       data = [data];
     }
-    data.forEach(item => {
+    data.forEach((item) => {
       try {
         this.registerPlugin(item);
       } catch (error) {
@@ -144,18 +163,19 @@ export class NotebookApp extends JupyterFrontEnd<INotebookShell> {
    * @param mods - The plugin modules to register.
    */
   registerPluginModules(mods: NotebookApp.IPluginModule[]): void {
-    mods.forEach(mod => {
+    mods.forEach((mod) => {
       this.registerPluginModule(mod);
     });
   }
 
+  private _info: JupyterLab.IInfo = JupyterLab.defaultInfo;
   private _formatter = new Throttler(() => {
     Private.setFormat(this);
   }, 250);
 }
 
 /**
- * A namespace for App statics.
+ * A namespace for App static items.
  */
 export namespace NotebookApp {
   /**
@@ -173,6 +193,11 @@ export namespace NotebookApp {
      * The mime renderer extensions.
      */
     readonly mimeExtensions: IRenderMime.IExtensionModule[];
+
+    /**
+     * The information about available plugins.
+     */
+    readonly availablePlugins: JupyterLab.IPluginInfo[];
   }
 
   /**

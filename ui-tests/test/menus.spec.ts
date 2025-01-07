@@ -5,7 +5,7 @@ import path from 'path';
 
 import { test } from './fixtures';
 
-import { expect } from '@playwright/test';
+import { expect } from '@jupyterlab/galata';
 import { waitForKernelReady } from './utils';
 
 const NOTEBOOK = 'empty.ipynb';
@@ -13,14 +13,14 @@ const NOTEBOOK = 'empty.ipynb';
 const MENU_PATHS = [
   'File',
   'File>New',
-  'File>Save and Export Notebook As…',
+  'File>Save and Export Notebook As',
   'Edit',
   'View',
   'Run',
   'Kernel',
   'Settings',
   'Settings>Theme',
-  'Help'
+  'Help',
 ];
 
 test.use({ autoGoto: false });
@@ -33,7 +33,7 @@ test.describe('Notebook Menus', () => {
     );
   });
 
-  MENU_PATHS.forEach(menuPath => {
+  MENU_PATHS.forEach((menuPath) => {
     test(`Open menu item ${menuPath}`, async ({ page, tmpPath }) => {
       await page.goto(`notebooks/${tmpPath}/${NOTEBOOK}`);
       await waitForKernelReady(page);
@@ -44,7 +44,7 @@ test.describe('Notebook Menus', () => {
       const imageName = `opened-menu-${menuPath.replace(/>/g, '-')}.png`;
       const menu = await page.menu.getOpenMenu();
       expect(menu).toBeDefined();
-      expect(await menu!.screenshot()).toMatchSnapshot(imageName.toLowerCase());
+      expect(await menu?.screenshot()).toMatchSnapshot(imageName.toLowerCase());
     });
   });
 });

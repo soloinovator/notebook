@@ -1,6 +1,6 @@
 {
   "name": "@jupyter-notebook/help-extension",
-  "version": "7.0.0-alpha.10",
+  "version": "7.4.0-alpha.1",
   "description": "Jupyter Notebook - Help Extension",
   "homepage": "https://github.com/jupyter/notebook",
   "bugs": {
@@ -35,19 +35,20 @@
     "build:prod": "tsc -b",
     "clean": "rimraf lib && rimraf tsconfig.tsbuildinfo",
     "docs": "typedoc src",
-    "prepublishOnly": "npm run build",
     "watch": "tsc -b --watch"
   },
   "dependencies": {
-    "@jupyter-notebook/ui-components": "^7.0.0-alpha.10",
-    "@jupyterlab/application": "^4.0.0-alpha.17",
-    "@jupyterlab/apputils": "^4.0.0-alpha.17",
-    "@jupyterlab/mainmenu": "^4.0.0-alpha.17",
-    "@jupyterlab/translation": "^4.0.0-alpha.17"
+    "@jupyter-notebook/ui-components": "^7.4.0-alpha.1",
+    "@jupyterlab/application": "~4.4.0-alpha.2",
+    "@jupyterlab/apputils": "~4.5.0-alpha.2",
+    "@jupyterlab/mainmenu": "~4.4.0-alpha.2",
+    "@jupyterlab/translation": "~4.4.0-alpha.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "rimraf": "^3.0.2",
-    "typescript": "~4.9.3"
+    "typescript": "~5.1.6"
   },
   "publishConfig": {
     "access": "public"

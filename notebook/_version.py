@@ -1,11 +1,12 @@
 """Version info for notebook."""
+
 # Copyright (c) Jupyter Development Team.
 # Distributed under the terms of the Modified BSD License.
 import re
 from collections import namedtuple
 
 # Use "hatch version xx.yy.zz" to handle version changes
-__version__ = "7.0.0a10"
+__version__ = "7.4.0a1"
 
 # PEP440 version parser
 _version_regex = re.compile(
@@ -21,9 +22,9 @@ _version_regex = re.compile(
     re.VERBOSE,
 )
 
-_version_fields = _version_regex.match(__version__).groupdict()  # type:ignore
+_version_fields = _version_regex.match(__version__).groupdict()  # type:ignore[union-attr]
 
-VersionInfo = namedtuple("VersionInfo", ["major", "minor", "micro", "releaselevel", "serial"])
+VersionInfo = namedtuple("VersionInfo", ["major", "minor", "micro", "releaselevel", "serial"])  # noqa: PYI024
 
 version_info = VersionInfo(
     *[

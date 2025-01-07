@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-#
 # Jupyter Notebook documentation build configuration file, created by
 # sphinx-quickstart on Mon Apr 13 09:51:11 2015.
 #
@@ -73,7 +71,7 @@ extensions = [
 ]
 
 try:
-    import enchant  # type:ignore  # noqa
+    import enchant  # noqa: F401
 
     extensions += ["sphinxcontrib.spelling"]
 except ImportError:
@@ -97,7 +95,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "Jupyter Notebook"
-copyright = "2015, Jupyter Team, https://jupyter.org"  # noqa
+copyright = "2015, Jupyter Team, https://jupyter.org"
 author = "The Jupyter Team"
 
 # ghissue config
@@ -109,9 +107,9 @@ github_project_url = "https://github.com/jupyter/notebook"
 #
 _version_py = os.path.join(here, "../../notebook/_version.py")
 version_ns = {}
-exec(compile(open(_version_py).read(), _version_py, "exec"), version_ns)  # noqa
+exec(compile(open(_version_py).read(), _version_py, "exec"), version_ns)  # noqa: S102, SIM115
 # The short X.Y version.
-version = "%i.%i" % version_ns["version_info"][:2]
+version = "{}.{}".format(*version_ns["version_info"][:2])
 # The full version, including alpha/beta/rc tags.
 release = version_ns["__version__"]
 
@@ -173,7 +171,48 @@ html_theme = "pydata_sphinx_theme"
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-# html_theme_options = {}
+html_theme_options = {
+    "header_links_before_dropdown": 5,
+    "icon_links": [
+        {
+            "name": "jupyter.org",
+            "url": "https://jupyter.org",
+            "icon": "_static/jupyter_logo.svg",
+            "type": "local",
+        },
+        {
+            "name": "GitHub",
+            "url": "https://github.com/jupyter/notebook",
+            "icon": "fab fa-github-square",
+        },
+        {
+            "name": "Discourse",
+            "url": "https://discourse.jupyter.org/c/notebook/31",
+            "icon": "fab fa-discourse",
+        },
+        {
+            "name": "Zulip",
+            "url": "https://jupyter.zulipchat.com/",
+            "icon": "_static/zulip-icon-square.svg",
+            "type": "local",
+        },
+    ],
+    "logo": {
+        "alt_text": "Jupyter",
+        "image_light": "_static/logo-rectangle.svg",
+        "image_dark": "_static/logo-rectangle-dark.svg",
+    },
+    "use_edit_page_button": True,
+    "navigation_with_keys": False,
+}
+
+# Output for github to be used in links
+html_context = {
+    "github_user": "jupyter",  # Username
+    "github_repo": "notebook",  # Repo name
+    "github_version": "main",  # Version
+    "doc_path": "docs/source/",  # Path in the checkout to the docs root
+}
 
 # Add any paths that contain custom themes here, relative to this directory.
 # html_theme_path = []
@@ -264,6 +303,11 @@ html_static_path = ["_static"]
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = "JupyterNotebookdoc"
+
+# This will ensure that we use the correctly set environment for canonical URLs
+# Old Read the Docs injections makes it point only to the default version,
+# for instance /en/stable/
+html_baseurl = os.environ.get("READTHEDOCS_CANONICAL_URL", "/")
 
 # -- Options for LaTeX output ---------------------------------------------
 

@@ -3,10 +3,10 @@
 
 import {
   JupyterFrontEnd,
-  JupyterFrontEndPlugin
+  JupyterFrontEndPlugin,
 } from '@jupyterlab/application';
 
-import { showDialog, Dialog } from '@jupyterlab/apputils';
+import { Dialog, ICommandPalette } from '@jupyterlab/apputils';
 
 import { IMainMenu } from '@jupyterlab/mainmenu';
 
@@ -22,12 +22,16 @@ import * as React from 'react';
 const RESOURCES = [
   {
     text: 'About Jupyter',
-    url: 'https://jupyter.org'
+    url: 'https://jupyter.org',
   },
   {
     text: 'Markdown Reference',
-    url: 'https://commonmark.org/help/'
-  }
+    url: 'https://commonmark.org/help/',
+  },
+  {
+    text: 'Documentation',
+    url: 'https://jupyter-notebook.readthedocs.io/en/stable/',
+  },
 ];
 
 /**
@@ -36,82 +40,48 @@ const RESOURCES = [
 namespace CommandIDs {
   export const open = 'help:open';
 
-  export const shortcuts = 'help:shortcuts';
-
   export const about = 'help:about';
 }
 
 /**
- * The help plugin.
+ * A plugin to open the about section with resources.
  */
-const plugin: JupyterFrontEndPlugin<void> = {
-  id: '@jupyter-notebook/help-extension:plugin',
+const open: JupyterFrontEndPlugin<void> = {
+  id: '@jupyter-notebook/help-extension:open',
+  autoStart: true,
+  description: 'A plugin to open the about section with resources',
+  activate: (app: JupyterFrontEnd): void => {
+    const { commands } = app;
+
+    commands.addCommand(CommandIDs.open, {
+      label: (args) => args['text'] as string,
+      execute: (args) => {
+        const url = args['url'] as string;
+        window.open(url);
+      },
+    });
+  },
+};
+
+/**
+ * Plugin to add a command to show an About Jupyter Notebook and Markdown Reference.
+ */
+const about: JupyterFrontEndPlugin<void> = {
+  id: '@jupyter-notebook/help-extension:about',
   autoStart: true,
   requires: [ITranslator],
-  optional: [IMainMenu],
+  optional: [IMainMenu, ICommandPalette],
+  description:
+    'Plugin to add a command to show an About Jupyter Notebook and Markdown Reference',
   activate: (
     app: JupyterFrontEnd,
     translator: ITranslator,
-    menu: IMainMenu | null
+    menu: IMainMenu | null,
+    palette: ICommandPalette | null
   ): void => {
     const { commands } = app;
     const trans = translator.load('notebook');
-
-    commands.addCommand(CommandIDs.open, {
-      label: args => args['text'] as string,
-      execute: args => {
-        const url = args['url'] as string;
-        window.open(url);
-      }
-    });
-
-    commands.addCommand(CommandIDs.shortcuts, {
-      label: trans.__('Keyboard Shortcuts'),
-      execute: () => {
-        const title = (
-          <span className="jp-AboutNotebook-about-header">
-            <div className="jp-AboutNotebook-about-header-info">
-              {trans.__('Keyboard Shortcuts')}
-            </div>
-          </span>
-        );
-
-        const body = (
-          <table className="jp-AboutNotebook-shortcuts">
-            <thead>
-              <tr>
-                <th>{trans.__('Name')}</th>
-                <th>{trans.__('Shortcut')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {commands.keyBindings
-                .filter(binding => commands.isEnabled(binding.command))
-                .map((binding, i) => (
-                  <tr key={i}>
-                    <td>{commands.label(binding.command)}</td>
-                    <td>
-                      <pre>{binding.keys.join(', ')}</pre>
-                    </td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
-        );
-
-        return showDialog({
-          title,
-          body,
-          buttons: [
-            Dialog.createButton({
-              label: trans.__('Dismiss'),
-              className:
-                'jp-AboutNotebook-about-button jp-mod-reject jp-mod-styled'
-            })
-          ]
-        });
-      }
-    });
+    const category = trans.__('Help');
 
     commands.addCommand(CommandIDs.about, {
       label: trans.__('About %1', app.name),
@@ -167,24 +137,30 @@ const plugin: JupyterFrontEndPlugin<void> = {
             Dialog.createButton({
               label: trans.__('Dismiss'),
               className:
-                'jp-AboutNotebook-about-button jp-mod-reject jp-mod-styled'
-            })
-          ]
+                'jp-AboutNotebook-about-button jp-mod-reject jp-mod-styled',
+            }),
+          ],
         });
         dialog.addClass('jp-AboutNotebook');
         void dialog.launch();
-      }
+      },
     });
 
-    const resourcesGroup = RESOURCES.map(args => ({
+    if (palette) {
+      palette.addItem({ command: CommandIDs.about, category });
+    }
+
+    const resourcesGroup = RESOURCES.map((args) => ({
       args,
-      command: CommandIDs.open
+      command: CommandIDs.open,
     }));
 
     if (menu) {
       menu.helpMenu.addGroup(resourcesGroup, 30);
     }
-  }
+  },
 };
 
-export default plugin;
+const plugins: JupyterFrontEndPlugin<any>[] = [open, about];
+
+export default plugins;

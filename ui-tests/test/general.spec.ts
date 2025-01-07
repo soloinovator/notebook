@@ -3,14 +3,14 @@
 
 import path from 'path';
 
-import { expect } from '@playwright/test';
+import { expect } from '@jupyterlab/galata';
 
 import { test } from './fixtures';
 
-import { waitForKernelReady } from './utils';
+import { waitForNotebook } from './utils';
 
 test.describe('General', () => {
-  test('The notebook should render', async ({ page, tmpPath }) => {
+  test('The notebook should render', async ({ page, tmpPath, browserName }) => {
     const notebook = 'simple.ipynb';
     await page.contents.uploadFile(
       path.resolve(__dirname, `./notebooks/${notebook}`),
@@ -18,19 +18,19 @@ test.describe('General', () => {
     );
     await page.goto(`notebooks/${tmpPath}/${notebook}`);
 
-    // wait for the kernel status animations to be finished
-    await waitForKernelReady(page);
-    await page.waitForSelector(
-      ".jp-Notebook-ExecutionIndicator[data-status='idle']"
-    );
+    // check the notebook footer shows up on hover
+    const notebookFooter = '.jp-Notebook-footer';
+    await page.hover(notebookFooter);
+    await page.waitForSelector(notebookFooter);
 
-    // wait for the checkpoint indicator to be displayed
-    await page.waitForSelector('.jp-NotebookCheckpoint');
+    // hover somewhere else to make the add cell disappear
+    await page.hover('#jp-top-bar');
 
-    // force switching back to command mode to avoid capturing the cursor in the screenshot
-    await page.evaluate(async () => {
-      await window.jupyterapp.commands.execute('notebook:enter-command-mode');
-    });
+    // click to make the blue border around the cell disappear
+    await page.click('.jp-WindowedPanel-outer');
+
+    // wait for the notebook to be ready
+    await waitForNotebook(page, browserName);
 
     expect(await page.screenshot()).toMatchSnapshot('notebook.png');
   });

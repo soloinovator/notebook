@@ -3,7 +3,7 @@
 
 import { test } from './fixtures';
 
-import { expect } from '@playwright/test';
+import { expect } from '@jupyterlab/galata';
 
 const SUBFOLDER = 'subfolder';
 
@@ -25,7 +25,7 @@ test('should go to subfolder', async ({ page, tmpPath }) => {
 
 test('should update url when navigating in filebrowser', async ({
   page,
-  tmpPath
+  tmpPath,
 }) => {
   await page.contents.createDirectory(`${tmpPath}/${SUBFOLDER}`);
 
@@ -39,8 +39,11 @@ test('should update url when navigating in filebrowser', async ({
 
 test('Should activate file browser tab', async ({ page, tmpPath }) => {
   await page.goto(`tree/${tmpPath}`);
-  await page.click('text="Running"');
-  await expect(page.locator('#main-panel #jp-running-sessions')).toBeVisible();
+  await page.locator('.jp-TreePanel >> text="Running"').click();
+
+  await expect(
+    page.locator('#main-panel #jp-running-sessions-tree')
+  ).toBeVisible();
 
   await page.menu.clickMenuItem('View>File Browser');
   await expect(page.locator('#main-panel #filebrowser')).toBeVisible();

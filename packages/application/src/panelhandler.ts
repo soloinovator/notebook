@@ -48,7 +48,7 @@ export class PanelHandler {
       case 'child-removed':
         {
           const widget = (msg as Widget.ChildMessage).child;
-          ArrayExt.removeFirstWhere(this._items, v => v.widget === widget);
+          ArrayExt.removeFirstWhere(this._items, (v) => v.widget === widget);
         }
         break;
       default:
@@ -79,18 +79,20 @@ export class SidePanelHandler extends PanelHandler {
     this._widgetPanel = new StackedPanel();
     this._widgetPanel.widgetRemoved.connect(this._onWidgetRemoved, this);
 
-    const closeButton = document.createElement('button');
+    this._closeButton = document.createElement('button');
     closeIcon.element({
-      container: closeButton,
+      container: this._closeButton,
       height: '16px',
-      width: 'auto'
+      width: 'auto',
     });
-    closeButton.onclick = () => {
+    this._closeButton.onclick = () => {
       this.collapse();
       this.hide();
     };
-    closeButton.className = 'jp-Button jp-SidePanel-collapse';
-    const icon = new Widget({ node: closeButton });
+    this._closeButton.className = 'jp-Button jp-SidePanel-collapse';
+    this._closeButton.title = 'Collapse side panel';
+
+    const icon = new Widget({ node: this._closeButton });
     this._panel.addWidget(icon);
     this._panel.addWidget(this._widgetPanel);
   }
@@ -131,7 +133,7 @@ export class SidePanelHandler extends PanelHandler {
    * Get the widgets list.
    */
   get widgets(): Readonly<Widget[]> {
-    return this._items.map(obj => obj.widget);
+    return this._items.map((obj) => obj.widget);
   }
 
   /**
@@ -149,6 +151,13 @@ export class SidePanelHandler extends PanelHandler {
   }
 
   /**
+   * Get the close button element.
+   */
+  get closeButton(): HTMLButtonElement {
+    return this._closeButton;
+  }
+
+  /**
    * Expand the sidebar.
    *
    * #### Notes
@@ -156,17 +165,20 @@ export class SidePanelHandler extends PanelHandler {
    * if there is no most recently used.
    */
   expand(id?: string): void {
-    if (this._currentWidget) {
-      this.collapse();
-    }
     if (id) {
-      this.activate(id);
-    } else {
-      const visibleWidget = this.currentWidget;
-      if (visibleWidget) {
-        this._currentWidget = visibleWidget;
-        this.activate(visibleWidget.id);
+      if (this._currentWidget && this._currentWidget.id === id) {
+        this.collapse();
+        this.hide();
+      } else {
+        this.collapse();
+        this.hide();
+        this.activate(id);
+        this.show();
       }
+    } else if (this.currentWidget) {
+      this._currentWidget = this.currentWidget;
+      this.activate(this._currentWidget.id);
+      this.show();
     }
   }
 
@@ -244,14 +256,14 @@ export class SidePanelHandler extends PanelHandler {
    * Find the index of the item with the given widget, or `-1`.
    */
   private _findWidgetIndex(widget: Widget): number {
-    return ArrayExt.findFirstIndex(this._items, i => i.widget === widget);
+    return ArrayExt.findFirstIndex(this._items, (i) => i.widget === widget);
   }
 
   /**
    * Find the widget with the given id, or `null`.
    */
   private _findWidgetByID(id: string): Widget | null {
-    const item = find(this._items, value => value.widget.id === id);
+    const item = find(this._items, (value) => value.widget.id === id);
     return item ? item.widget : null;
   }
 
@@ -281,6 +293,7 @@ export class SidePanelHandler extends PanelHandler {
   private _widgetPanel: StackedPanel;
   private _currentWidget: Widget | null;
   private _lastCurrentWidget: Widget | null;
+  private _closeButton: HTMLButtonElement;
   private _widgetAdded: Signal<SidePanelHandler, Widget> = new Signal(this);
   private _widgetRemoved: Signal<SidePanelHandler, Widget> = new Signal(this);
 }
@@ -340,16 +353,16 @@ export class SidePanelPalette {
       args: {
         side: area,
         title: `Show ${widget.title.caption}`,
-        id: widget.id
-      }
+        id: widget.id,
+      },
     });
 
-    // Keep the disposableDelegate objet to be able to dispose of the item if the widget
+    // Keep the disposableDelegate object to be able to dispose of the item if the widget
     // is remove from the side panel.
     this._items.push({
       widgetId: widget.id,
       area: area,
-      disposable: disposableDelegate
+      disposable: disposableDelegate,
     });
   }
 

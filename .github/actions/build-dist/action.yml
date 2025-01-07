@@ -1,7 +1,7 @@
-name: "Build Jupyter Notebook"
-description: "Build Jupyter Notebook from source"
+name: 'Build Jupyter Notebook'
+description: 'Build Jupyter Notebook from source'
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - name: Base Setup
       uses: jupyterlab/maintainer-tools/.github/actions/base-setup@v1
@@ -32,13 +32,13 @@ runs:
         sha256sum * | tee SHA256SUMS
 
     - name: Upload distributions
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: notebook-dist-${{ github.run_number }}
         path: ./dist
 
     - name: Upload distributions
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: notebook-pkgs-${{ github.run_number }}
         path: ./pkgs

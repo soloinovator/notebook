@@ -9,3 +9,15 @@
   align-items: center;
   justify-content: center;
 }
+
+.jp-InterfaceSwitcher .lm-MenuBar-itemIcon svg {
+  vertical-align: sub;
+}
+
+.jp-nb-interface-switcher-button > .jp-ToolbarButtonComponent::part(content) {
+  flex-direction: row-reverse;
+}
+
+.jp-nb-interface-switcher-button > .jp-ToolbarButtonComponent > svg {
+  padding-left: 3px;
+}

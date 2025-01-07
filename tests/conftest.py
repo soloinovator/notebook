@@ -4,11 +4,12 @@ import os
 import os.path as osp
 import pathlib
 import shutil
+import sys
 
-try:
+if sys.version_info < (3, 10):
+    from importlib_resources import files
+else:
     from importlib.resources import files
-except ImportError:
-    from importlib_resources import files  # type:ignore
 
 import pytest
 
@@ -32,7 +33,7 @@ labextensions_dir = pytest.fixture(lambda tmp_path: mkdir(tmp_path, "labextensio
 
 
 @pytest.fixture
-def make_notebook_app(
+def make_notebook_app(  # PLR0913
     jp_root_dir,
     jp_template_dir,
     app_settings_dir,
@@ -42,7 +43,6 @@ def make_notebook_app(
     labextensions_dir,
 ):
     def _make_notebook_app(**kwargs):
-
         return JupyterNotebookApp(
             static_dir=str(jp_root_dir),
             templates_dir=str(jp_template_dir),
@@ -92,7 +92,7 @@ def make_notebook_app(
     )
 
     # Copy the schema files.
-    test_data = str(files("jupyterlab_server.test_data").joinpath(""))
+    test_data = str(files("jupyterlab_server.test_data")._paths[0])
     src = pathlib.PurePath(test_data, "schemas", "@jupyterlab")
     dst = pathlib.PurePath(str(schemas_dir), "@jupyterlab")
     if os.path.exists(dst):
