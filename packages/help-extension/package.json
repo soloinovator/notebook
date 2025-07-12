@@ -41,8 +41,8 @@
   "dependencies": {
     "@jupyter-notebook/ui-components": "^7.0.0-alpha.10",
     "@jupyterlab/application": "^4.0.0-alpha.17",
-    "@jupyterlab/apputils": "^4.0.0-alpha.17",
-    "@jupyterlab/mainmenu": "^4.0.0-alpha.17",
+    "@jupyterlab/apputils": "^4.0.0",
+    "@jupyterlab/mainmenu": "^4.0.0",
     "@jupyterlab/translation": "^4.0.0-alpha.17"
   },
   "devDependencies": {
