@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "@jupyter-notebook/application": "^7.6.0-alpha.2",
-    "@jupyter-notebook/ui-components": "^7.6.0-alpha.2",
+    "@jupyter-notebook/ui-components": "^7.0.0",
     "@jupyterlab/application": "~4.6.0-alpha.2",
     "@jupyterlab/apputils": "~4.7.0-alpha.2",
     "@jupyterlab/codeeditor": "~4.6.0-alpha.2",
