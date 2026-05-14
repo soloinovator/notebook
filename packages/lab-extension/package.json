@@ -43,7 +43,7 @@
     "watch:src": "tsc -w"
   },
   "dependencies": {
-    "@jupyter-notebook/application": "^7.6.0-alpha.5",
+    "@jupyter-notebook/application": "^7.0.0",
     "@jupyterlab/application": "~4.6.0-alpha.5",
     "@jupyterlab/apputils": "~4.7.0-alpha.5",
     "@jupyterlab/coreutils": "~6.6.0-alpha.5",
