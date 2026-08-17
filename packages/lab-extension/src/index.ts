@@ -94,7 +94,7 @@ const interfaceSwitcher: JupyterFrontEndPlugin<void> = {
     }
 
     const { commands, shell } = app;
-    const baseUrl = PageConfig.getBaseUrl();
+    const baseUrl = app.serviceManager.serverSettings.baseUrl;
     const trans = translator.load('notebook');
     const nbClassicEnabled =
       PageConfig.getOption('nbclassic_enabled') === 'true';
@@ -263,7 +263,10 @@ const launchNotebookTree: JupyterFrontEndPlugin<void> = {
     commands.addCommand(CommandIDs.launchNotebookTree, {
       label: trans.__('Launch Jupyter Notebook File Browser'),
       execute: () => {
-        const url = URLExt.join(PageConfig.getBaseUrl(), 'tree');
+        const url = URLExt.join(
+          app.serviceManager.serverSettings.baseUrl,
+          'tree'
+        );
         window.open(url);
       },
       describedBy: {

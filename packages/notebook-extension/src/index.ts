@@ -17,7 +17,7 @@ import {
 
 import { Cell, CodeCell } from '@jupyterlab/cells';
 
-import { PageConfig, Time, URLExt } from '@jupyterlab/coreutils';
+import { Time, URLExt } from '@jupyterlab/coreutils';
 
 import { IDebugger, IDebuggerSidebar } from '@jupyterlab/debugger';
 
@@ -332,7 +332,10 @@ const openTreeTab: JupyterFrontEndPlugin<void> = {
     commands.addCommand(id, {
       label: trans.__('Open…'),
       execute: async () => {
-        const url = URLExt.join(PageConfig.getBaseUrl(), 'tree');
+        const url = URLExt.join(
+          app.serviceManager.serverSettings.baseUrl,
+          'tree'
+        );
         window.open(url);
       },
       describedBy: {
@@ -701,7 +704,7 @@ const tabIcon: JupyterFrontEndPlugin<void> = {
   requires: [INotebookTracker],
   activate: (app: JupyterFrontEnd, tracker: INotebookTracker) => {
     // the favicons are provided by Jupyter Server
-    const baseURL = PageConfig.getBaseUrl();
+    const baseURL = app.serviceManager.serverSettings.baseUrl;
     const notebookIcon = URLExt.join(
       baseURL,
       'static/favicons/favicon-notebook.ico'
