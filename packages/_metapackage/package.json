@@ -25,7 +25,7 @@
     "@jupyter-notebook/console-extension": "^7.7.0-alpha.1",
     "@jupyter-notebook/docmanager-extension": "^7.7.0-alpha.1",
     "@jupyter-notebook/documentsearch-extension": "^7.7.0-alpha.1",
-    "@jupyter-notebook/help-extension": "^7.7.0-alpha.1",
+    "@jupyter-notebook/help-extension": "^7.0.0",
     "@jupyter-notebook/lab-extension": "^7.7.0-alpha.1",
     "@jupyter-notebook/notebook-extension": "^7.7.0-alpha.1",
     "@jupyter-notebook/terminal-extension": "^7.7.0-alpha.1",
